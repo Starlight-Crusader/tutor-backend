@@ -1,5 +1,8 @@
 from django.db import models
 from users.models import User
+from subjects.models import Subject
+from certificates.models import Certificate
+from reviews.models import Review
 
 class Profile(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
