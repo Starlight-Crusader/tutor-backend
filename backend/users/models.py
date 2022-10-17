@@ -23,7 +23,7 @@ class Rewiew(models.Model):
     rewiew_text = models.CharField(max_length=256)
 
 class User(models.Model):
-    email = models.EmailField()
+    email = models.EmailField(max_length=64)
     password = models.CharField(max_length=32)
 
     first_name = models.CharField(max_length=16)
