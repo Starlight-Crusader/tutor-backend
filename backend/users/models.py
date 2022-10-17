@@ -6,7 +6,7 @@ class TestUnit(models.Model):
 class TestManyToMany(models.Model):
     test_record = models.ManyToManyField(TestUnit)
 
-class Sertificate(models.Model):
+class Certificate(models.Model):
     subject_name = models.CharField(max_length=32)
     document_path = models.CharField(max_length=64)
 
@@ -40,5 +40,5 @@ class User(models.Model):
     profile_picture = models.CharField(max_length=64, blank=True)
     
     subjects = models.ManyToManyField(Subject, blank=True)
-    sertificates = models.ManyToManyField(Sertificate, blank=True)
+    sertificates = models.ManyToManyField(Certificate, blank=True)
     rewiews = models.ManyToManyField(Rewiew, blank=True)
