@@ -1,26 +1,32 @@
 from django.db import models
 
-class TestUnit(models.Model):
-    test_data = models.CharField(max_length=8)
-
-class TestManyToMany(models.Model):
-    test_record = models.ManyToManyField(TestUnit)
+# Create new apps for models
 
 class Certificate(models.Model):
+    # Foreign key to Sybjects?
     subject_name = models.CharField(max_length=32)
-    document_path = models.CharField(max_length=64)
+    document_path = models.FileField()
 
     is_verified = models.BooleanField(default=False)
+
 
 class Subject(models.Model):
     subject_name = models.CharField(max_length=16)
 
+
 class Rewiew(models.Model):
-    author_fname = models.CharField(max_length=16)
-    author_lname = models.CharField(max_length=16)
+    author_user = models.ForeignKey(User, on_delete=models.CASCADE)
     
-    rating = models.IntegerField()
     rewiew_text = models.CharField(max_length=256)
+
+
+class Rating(models.Model):
+    author_user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    rating_value = models.IntegerField(min_value=1)
+
+    # models.PositiveIntegerField()
+
 
 class User(models.Model):
     email = models.EmailField(max_length=64)
@@ -37,8 +43,11 @@ class User(models.Model):
     date_of_birth = models.DateField(null=True)
     location = models.CharField(max_length=32)
 
-    profile_picture = models.CharField(max_length=64, blank=True)
+    profile_picture = models.FileField()
     
     subjects = models.ManyToManyField(Subject, blank=True)
     sertificates = models.ManyToManyField(Certificate, blank=True)
     rewiews = models.ManyToManyField(Rewiew, blank=True)
+
+
+# Add profile model
