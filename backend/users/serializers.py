@@ -9,3 +9,4 @@ class UserSerializer(serializers.ModelSerializer):
         model = models.User
         # exclude = ['password']
         fields = '__all__'
+        

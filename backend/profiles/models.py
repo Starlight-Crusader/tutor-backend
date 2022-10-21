@@ -11,8 +11,8 @@ from phone_field import PhoneField
 class Profile(models.Model):
 
     PROFILE_TYPE = (
-        ("TUTOR", 1),
-        ("STUDENT", 2)
+        (1, "TUTOR"),
+        (2, "STUDENT")
     )
 
     profile_type = models.IntegerField(choices=PROFILE_TYPE)
@@ -26,7 +26,7 @@ class Profile(models.Model):
     is_trusted = models.BooleanField(default=False)
     date_of_birth = models.DateField(null=True)
     location = models.CharField(max_length=50)
-    profile_picture = models.FileField(upload_to="docs/pfp")
+    profile_picture = models.FileField(upload_to="docs/pfp", blank=True)
     subjects = models.ManyToManyField(Subject, blank=True)
     certificates = models.ManyToManyField(Certificate, blank=True)
     reviews = models.ManyToManyField(Review, blank=True)
