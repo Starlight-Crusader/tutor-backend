@@ -1,3 +1,8 @@
-from django.shortcuts import render
+from rest_framework import generics
+from certificates import models, serializers
 
-# Create your views here.
+
+class CertificateList(generics.ListCreateAPIView):
+    queryset = models.Certificate.objects.all()
+    serializer_class = serializers.CertificateSerializer
+    

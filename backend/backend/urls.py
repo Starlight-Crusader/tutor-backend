@@ -20,6 +20,9 @@ urlpatterns = [
     path('api/', include([
         path('users/', include('users.urls')),
         path('profiles/', include('profiles.urls')),
-        path('reviews/', include('reviews.urls'))
+        path('reviews/', include('reviews.urls')),
+        path('certificates/', include('certificates.urls')),
+        path('subjects/', include('subjects.urls')),
+        path('ratings/', include('ratings.urls'))
     ]))
 ]
