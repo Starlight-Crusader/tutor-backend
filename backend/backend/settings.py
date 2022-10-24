@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'ratings',
     'reviews',
     'subjects',
-    'rest_framework'
+    'rest_framework',
+    'auth'
 ]
 
 MIDDLEWARE = [
