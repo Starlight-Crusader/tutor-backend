@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'reviews',
     'subjects',
     'rest_framework',
-    'auth'
+    'authen'
 ]
 
 MIDDLEWARE = [

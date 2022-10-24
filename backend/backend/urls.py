@@ -23,6 +23,7 @@ urlpatterns = [
         path('reviews/', include('reviews.urls')),
         path('certificates/', include('certificates.urls')),
         path('subjects/', include('subjects.urls')),
-        path('ratings/', include('ratings.urls'))
+        path('ratings/', include('ratings.urls')),
+        path('authen/', include('authen.urls'))
     ]))
 ]
