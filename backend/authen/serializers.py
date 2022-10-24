@@ -32,4 +32,8 @@ class ChangePasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField()
     new_password = serializers.CharField()
     confirm_new_password = serializers.CharField()
-    
+
+
+class RecoveryPasswordSerializer(serializers.Serializer):
+    pass
+#TODO: RecoveryCode serializer, views, url; 

@@ -27,6 +27,8 @@ def login_view(request):
     
 
 class PasswordRecoveryView():
+    #TODO: request password by email; create code based on the model in users
+    #TODO: replace old password; input new password (look in changepassword)
     pass
 
 class RegisterView(generics.CreateAPIView):
