@@ -3,6 +3,11 @@ from django.contrib.auth import hashers
 from rest_framework import generics, decorators, status, response
 from authen import serializers
 from users import models
+from django.core.mail import send_mail
+from backend import settings
+import hashlib
+import random
+import datetime
 
 
 @decorators.api_view(['POST'])
@@ -26,10 +31,40 @@ def login_view(request):
     return response.Response(data)
     
 
-class PasswordRecoveryView():
-    #TODO: request password by email; create code based on the model in users
-    #TODO: replace old password; input new password (look in changepassword)
-    pass
+@decorators.api_view(['POST'])
+def send_recoveryCode(request, pk=None):
+    serializer = serializers.RecoveryStepOneSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    try:
+        user = models.User.objects.get(email=serializer.data['email'])
+    except models.User.DoesNotExist:
+        return response.Response('Utilizatorul nu exista.',
+                                 status=status.HTTP_404_NOT_FOUND)
+
+    recoveryCode = models.RecoveryCode.objects.all()
+    recoveryCode = models.RecoveryCode.objects.filter(user=user)
+
+    if(recoveryCode):
+        return response.Response('You already have a token.',
+                                 status=status.HTTP_400_BAD_REQUEST)
+
+    seed = str(random.randint(0, 1000))
+    hashed = hashlib.md5(seed.encode())
+
+    newCode = models.RecoveryCode.objects.create(recovery_code=str(hashed.hexdigest)[:5], 
+                                                 user=user,
+                                                 active_time=datetime.datetime.now()-datetime.timedelta(minutes=15))
+    
+    newCode.save()
+    
+    send_mail('Password recovery', 
+              'This is an automated message. Your recovery code is: ' + newCode.recovery_code, 
+              'tutoringapp.testreciever@gmail.com',
+              ['tutoringapp.testreciever@gmail.com'],
+              fail_silently=False)
+
+    return response.Response('A recovery code was ceated and send to your email.')
+        
 
 class RegisterView(generics.CreateAPIView):
     serializer_class = serializers.RegisterSerializer

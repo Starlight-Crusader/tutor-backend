@@ -10,3 +10,8 @@ class UserSerializer(serializers.ModelSerializer):
         # exclude = ['password']
         fields = '__all__'
         
+class RecoveryCodeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.RecoveryCode
+        fields= '__all__'
