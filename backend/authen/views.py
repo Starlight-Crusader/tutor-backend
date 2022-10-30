@@ -57,7 +57,7 @@ def recovery_step_1(request, pk=None):
 
     newCode = models.RecoveryCode.objects.create(recovery_code=str(hashed.hexdigest())[:5], 
                                                  user=user,
-                                                 active_time=datetime.datetime.now()+datetime.timedelta(minutes=30))
+                                                 active_time=datetime.datetime.now()+datetime.timedelta(minutes=1))
     
     newCode.save()
     
@@ -87,6 +87,10 @@ def recovery_step_2(request, pk=None):
     password = hashers.make_password(serializer.data['new_password'])
     user.password = password
     user.save()
+
+    code_record = models.RecoveryCode.objects.get(recovery_code=serializer.data['recovery_code'])
+    code_record.delete()
+    code_record.save()
 
     return response.Response('Parola a fost modificata.')
 
@@ -119,5 +123,5 @@ def change_password(request, pk=None):
     password = hashers.make_password(serializer.data['new_password'])
     user.password = password
     user.save()
-    
+
     return response.Response('Parola a fost modificata.')

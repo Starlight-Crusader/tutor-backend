@@ -24,6 +24,7 @@ urlpatterns = [
         path('certificates/', include('certificates.urls')),
         path('subjects/', include('subjects.urls')),
         path('ratings/', include('ratings.urls')),
-        path('authen/', include('authen.urls'))
+        path('authen/', include('authen.urls')),
+        path('rcodes-handling/', include('rcodes_handling.urls'))
     ]))
 ]
