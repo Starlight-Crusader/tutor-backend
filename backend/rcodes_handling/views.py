@@ -2,7 +2,6 @@ from django.shortcuts import render
 from users import models
 from rest_framework import generics, decorators, status, response
 from datetime import datetime
-from django.db.models import F
 from datetime import datetime as time
 import datetime
 
