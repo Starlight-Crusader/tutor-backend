@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'subjects',
     'rest_framework',
     'authen',
-    'rcodes_handling'
+    "phonenumber_field"
 ]
 
 MIDDLEWARE = [

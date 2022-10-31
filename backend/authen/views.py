@@ -1,5 +1,4 @@
 from datetime import datetime
-from turtle import update
 from django.contrib.auth import hashers
 from rest_framework import generics, decorators, status, response
 from authen import serializers
@@ -8,7 +7,8 @@ from django.core.mail import send_mail
 from backend import settings
 import hashlib
 import random
-import datetime
+import datetime as time
+from phone_field import PhoneField
 
 
 @decorators.api_view(['POST'])
@@ -78,8 +78,12 @@ def recovery_step_2(request):
     try:
         recoveryCode = models.RecoveryCode.objects.get(recovery_code=serializer.data['recovery_code'])
     except models.RecoveryCode.DoesNotExist:
-        return response.Response('This recovery code is not valid!',
-                                 status=status.HTTP_404_NOT_FOUND)
+        return response.Response('This recovery code does not exist!',
+                                 status=status.HTTP_400_BAD_REQUEST)
+
+    if(recoveryCode.is_active == False):
+        return response.Response('This recovery code is no longer valid!!',
+                                 status=status.HTTP_400_BAD_REQUEST)
     
     if(serializer.data['new_password'] != serializer.data['confirm_new_password']):
         return response.Response('Pass-s do not coincide!',
@@ -96,6 +100,14 @@ def recovery_step_2(request):
 
 class RegisterUserView(generics.CreateAPIView):
     serializer_class = serializers.RegisterUserSerializer
+
+
+class RegisterTutorView(generics.CreateAPIView):
+    serializer_class = serializers.RegisterTutorSerializer
+
+
+class RegisterStudentView(generics.CreateAPIView):
+    serializer_class = serializers.RegisterStudentSerializer
 
 
 class LogoutView():
@@ -128,14 +140,14 @@ def change_password(request, pk=None):
     return response.Response('Parola a fost modificata.')
 
 
-@decorators.api_view(['DELETE'])
-def delete_expired(request):
+@decorators.api_view(['PATCH'])
+def deactivate_expired(request):
     try:
         records = models.RecoveryCode.objects.all()
     except:
         return response.Response('There are no recovery codes.',
                                  status=status.HTTP_202_ACCEPTED)
 
-    records = models.RecoveryCode.objects.filter(active_time__range=[datetime.datetime.now()-datetime.timedelta(days=360), datetime.datetime.time.now()]).delete()
+    records = models.RecoveryCode.objects.filter(active_time__range=[datetime.now()-time.timedelta(days=360), datetime.now()]).update(is_active=False)
 
-    return response.Response('Expired codes were successfully deleted!')
+    return response.Response('Expired codes were deactivated!')
