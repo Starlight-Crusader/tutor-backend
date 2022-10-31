@@ -1,4 +1,5 @@
 from datetime import datetime
+from turtle import update
 from django.contrib.auth import hashers
 from rest_framework import generics, decorators, status, response
 from authen import serializers
@@ -24,7 +25,7 @@ def login_view(request):
         return response.Response('Utilizatorul nu exista.',
                                  status=status.HTTP_404_NOT_FOUND)
 
-    user.last_login = datetime.now()
+    user.last_login = datetime.datetime.now()
     data = {
         "id": user.id,
         "email": user.email,
@@ -35,7 +36,7 @@ def login_view(request):
     
 
 @decorators.api_view(['POST'])
-def recovery_step_1(request, pk=None):
+def recovery_step_1(request):
     serializer = serializers.RecoveryStepOneSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
 
@@ -45,8 +46,7 @@ def recovery_step_1(request, pk=None):
         return response.Response('Utilizatorul nu exista.',
                                  status=status.HTTP_404_NOT_FOUND)
 
-    recoveryCode = models.RecoveryCode.objects.all()
-    recoveryCode = models.RecoveryCode.objects.filter(user=user)
+    recoveryCode = models.RecoveryCode.objects.filter(user_id=user.pk)
 
     if(recoveryCode):
         return response.Response('You already have a token.',
@@ -57,7 +57,7 @@ def recovery_step_1(request, pk=None):
 
     newCode = models.RecoveryCode.objects.create(recovery_code=str(hashed.hexdigest())[:5], 
                                                  user=user,
-                                                 active_time=datetime.datetime.now()+datetime.timedelta(minutes=1))
+                                                 active_time=datetime.datetime.now()+datetime.timedelta(minutes=30))
     
     newCode.save()
     
@@ -69,14 +69,15 @@ def recovery_step_1(request, pk=None):
 
     return response.Response('A recovery code was ceated and send to your email.')
 
+
 @decorators.api_view(['POST'])
-def recovery_step_2(request, pk=None):
+def recovery_step_2(request):
     serializer = serializers.RecoveryStepTwoSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
 
     try:
-        user = models.RecoveryCode.objects.get(recovery_code=serializer.data['recovery_code']).user
-    except models.User.DoesNotExist:
+        recoveryCode = models.RecoveryCode.objects.get(recovery_code=serializer.data['recovery_code'])
+    except models.RecoveryCode.DoesNotExist:
         return response.Response('This recovery code is not valid!',
                                  status=status.HTTP_404_NOT_FOUND)
     
@@ -84,22 +85,23 @@ def recovery_step_2(request, pk=None):
         return response.Response('Pass-s do not coincide!',
                                  status=status.HTTP_400_BAD_REQUEST)
 
-    password = hashers.make_password(serializer.data['new_password'])
-    user.password = password
-    user.save()
+    recoveryCode.user.password = hashers.make_password(serializer.data['new_password'])
+    recoveryCode.user.save(update_fields=['password'])
 
-    code_record = models.RecoveryCode.objects.get(recovery_code=serializer.data['recovery_code'])
-    code_record.delete()
-    code_record.save()
+    recoveryCode.is_active = False 
+    recoveryCode.save(update_fields=['is_active'])
 
     return response.Response('Parola a fost modificata.')
 
-class RegisterView(generics.CreateAPIView):
-    serializer_class = serializers.RegisterSerializer
+
+class RegisterUserView(generics.CreateAPIView):
+    serializer_class = serializers.RegisterUserSerializer
+
 
 class LogoutView():
     #TODO: delete token after sign-out
     pass
+
 
 @decorators.api_view(['POST'])
 def change_password(request, pk=None):
@@ -120,8 +122,20 @@ def change_password(request, pk=None):
         return response.Response('Parola noua nu coincide.',
                                  status=status.HTTP_400_BAD_REQUEST)
 
-    password = hashers.make_password(serializer.data['new_password'])
-    user.password = password
-    user.save()
+    user.password = hashers.make_password(serializer.data['new_password'])
+    user.save(update_fields=['password'])
 
     return response.Response('Parola a fost modificata.')
+
+
+@decorators.api_view(['DELETE'])
+def delete_expired(request):
+    try:
+        records = models.RecoveryCode.objects.all()
+    except:
+        return response.Response('There are no recovery codes.',
+                                 status=status.HTTP_202_ACCEPTED)
+
+    records = models.RecoveryCode.objects.filter(active_time__range=[datetime.datetime.now()-datetime.timedelta(days=360), datetime.datetime.time.now()]).delete()
+
+    return response.Response('Expired codes were successfully deleted!')

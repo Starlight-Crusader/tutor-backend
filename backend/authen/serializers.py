@@ -3,7 +3,7 @@ from users import models
 from django.contrib.auth import hashers
 
 
-class RegisterSerializer(serializers.Serializer):
+class RegisterUserSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     email = serializers.EmailField()
     password = serializers.CharField()
