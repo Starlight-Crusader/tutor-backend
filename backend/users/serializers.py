@@ -9,6 +9,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = models.User
         # exclude = ['password']
         fields = '__all__'
+        extra_kwargs = {"password": {"write_only": True}, "email": {"write_only": True}}
         
 class RecoveryCodeSerializer(serializers.ModelSerializer):
 

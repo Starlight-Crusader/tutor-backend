@@ -8,7 +8,7 @@ from backend import settings
 import hashlib
 import random
 import datetime as time
-from phone_field import PhoneField
+from profiles import models as profile_models
 
 
 @decorators.api_view(['POST'])
@@ -19,10 +19,10 @@ def login_view(request):
     try:
         user = models.User.objects.get(email=serializer.data['email'])
         if user.check_password(serializer.data['password']) is False:
-            return response.Response('Parola incorecta.',
+            return response.Response('Password is incorrect.',
                                      status=status.HTTP_400_BAD_REQUEST)
     except models.User.DoesNotExist:
-        return response.Response('Utilizatorul nu exista.',
+        return response.Response('User does not exist.',
                                  status=status.HTTP_404_NOT_FOUND)
 
     user.last_login = datetime.datetime.now()
@@ -43,7 +43,7 @@ def recovery_step_1(request):
     try:
         user = models.User.objects.get(email=serializer.data['email'])
     except models.User.DoesNotExist:
-        return response.Response('Utilizatorul nu exista.',
+        return response.Response('User does not exist.',
                                  status=status.HTTP_404_NOT_FOUND)
 
     recoveryCode = models.RecoveryCode.objects.filter(user_id=user.pk)
@@ -78,15 +78,15 @@ def recovery_step_2(request):
     try:
         recoveryCode = models.RecoveryCode.objects.get(recovery_code=serializer.data['recovery_code'])
     except models.RecoveryCode.DoesNotExist:
-        return response.Response('This recovery code does not exist!',
+        return response.Response('This recovery code does not exist.',
                                  status=status.HTTP_400_BAD_REQUEST)
 
     if(recoveryCode.is_active == False):
-        return response.Response('This recovery code is no longer valid!!',
+        return response.Response('This recovery code is no longer valid.',
                                  status=status.HTTP_400_BAD_REQUEST)
     
     if(serializer.data['new_password'] != serializer.data['confirm_new_password']):
-        return response.Response('Pass-s do not coincide!',
+        return response.Response('Passwords do not coincide!',
                                  status=status.HTTP_400_BAD_REQUEST)
 
     recoveryCode.user.password = hashers.make_password(serializer.data['new_password'])
@@ -95,18 +95,20 @@ def recovery_step_2(request):
     recoveryCode.is_active = False 
     recoveryCode.save(update_fields=['is_active'])
 
-    return response.Response('Parola a fost modificata.')
+    return response.Response('The password has been updated.')
 
 
 class RegisterUserView(generics.CreateAPIView):
     serializer_class = serializers.RegisterUserSerializer
 
 
-class RegisterTutorView(generics.CreateAPIView):
+class RegisterTutorView(generics.ListCreateAPIView):
+    queryset = profile_models.Profile.objects.all()
     serializer_class = serializers.RegisterTutorSerializer
 
 
-class RegisterStudentView(generics.CreateAPIView):
+class RegisterStudentView(generics.ListCreateAPIView):
+    queryset = profile_models.Profile.objects.all()
     serializer_class = serializers.RegisterStudentSerializer
 
 
@@ -123,21 +125,21 @@ def change_password(request, pk=None):
     try:
         user = models.User.objects.get(id=pk)
     except models.User.DoesNotExist:
-        return response.Response('Utilizatorul nu exista.',
+        return response.Response('User does not exist.',
                                  status=status.HTTP_404_NOT_FOUND)
 
     if user.check_password(serializer.data['old_password']) is False:
-        return response.Response('Parola veche incorecta.',
+        return response.Response('Old password is incorrect.',
                                  status=status.HTTP_400_BAD_REQUEST)
 
     if serializer.data['new_password'] != serializer.data['confirm_new_password']:
-        return response.Response('Parola noua nu coincide.',
+        return response.Response('Passwords do not coincide.',
                                  status=status.HTTP_400_BAD_REQUEST)
 
     user.password = hashers.make_password(serializer.data['new_password'])
     user.save(update_fields=['password'])
 
-    return response.Response('Parola a fost modificata.')
+    return response.Response('The password has been updated.')
 
 
 @decorators.api_view(['PATCH'])

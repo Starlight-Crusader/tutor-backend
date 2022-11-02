@@ -46,8 +46,7 @@ INSTALLED_APPS = [
     'reviews',
     'subjects',
     'rest_framework',
-    'authen',
-    "phonenumber_field"
+    'authen'
 ]
 
 MIDDLEWARE = [

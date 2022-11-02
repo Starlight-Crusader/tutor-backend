@@ -1,8 +1,8 @@
 from rest_framework import serializers
 from users import models
 from profiles.models import Profile
+from users import serializers as users_serializers
 from django.contrib.auth import hashers
-from phonenumber_field.phonenumber import PhoneNumber
 
 
 class RegisterUserSerializer(serializers.Serializer):
@@ -24,56 +24,56 @@ class RegisterUserSerializer(serializers.Serializer):
         )
         return user
 
-class RegisterTutorSerializer(serializers.Serializer):
-    profile_type = serializers.IntegerField()
-    
-    first_name = serializers.CharField()
-    last_name = serializers.CharField()
-
-    phone_number = serializers.CharField()
-    contact_mail = serializers.EmailField()
-
-    location = serializers.CharField()
-    user_id = serializers.IntegerField()
-
-    def validate(self, attrs):
-        return attrs
-
-    def create(self, validated_data):
-        profile = Profile.objects.create(
-            profile_type=validated_data['profile_type'],
-            first_name=validated_data['first_name'],
-            last_name=validated_data['last_name'],
-            phone_number=PhoneNumber.from_string(validated_data['phone_number']),
-            contact_mail=validated_data['contact_mail'],
-            location=validated_data['location'],
-            user=models.User.objects.get(pk=validated_data['user_id'])
-        )
-        return profile
 
 class RegisterStudentSerializer(serializers.Serializer):
-    profile_type = serializers.IntegerField()
+    user = users_serializers.UserSerializer(read_only=True)
     
-    first_name = serializers.CharField()
-    last_name = serializers.CharField()
-
-    phone_number = serializers.CharField()
-
-    user_id = serializers.IntegerField()
-
-    def validate(self, attrs):
-        return attrs
-
+    class Meta:
+        model = Profile
+        fields = [
+            'profile_type',
+            'first_name',
+            'last_name',
+            'phone_number'
+        ]
+        
     def create(self, validated_data):
-        profile = Profile.objects.create(
-            profile_type=validated_data['profile_type'],
-            first_name=validated_data['first_name'],
-            last_name=validated_data['last_name'],
-            phone_number=PhoneNumber.from_string(validated_data['phone_number']),
-            user=models.User.objects.get(pk=validated_data['user_id'])
-        )
+        validated_data['user_id'] = self.initial_data['user_id']
+        validated_data['profile_type'] = self.initial_data['profile_type']
+        validated_data['first_name'] = self.initial_data['first_name']
+        validated_data['last_name'] = self.initial_data['last_name']
+        validated_data['phone_number'] = self.initial_data['phone_number']
+        profile = Profile.objects.create(**validated_data)
+        
         return profile
-
+   
+    
+class RegisterTutorSerializer(serializers.Serializer):
+    user = users_serializers.UserSerializer(read_only=True)
+    
+    class Meta:
+        model = Profile
+        fields = [
+            'profile_type',
+            'first_name',
+            'last_name',
+            'phone_number',
+            'contact_mail',
+            'location'
+        ]
+        
+    def create(self, validated_data):
+        validated_data['user_id'] = self.initial_data['user_id']
+        validated_data['profile_type'] = self.initial_data['profile_type']
+        validated_data['first_name'] = self.initial_data['first_name']
+        validated_data['last_name'] = self.initial_data['last_name']
+        validated_data['phone_number'] = self.initial_data['phone_number']
+        validated_data['contact_mail'] = self.initial_data['contact_mail']
+        validated_data['location'] = self.initial_data['location']
+        profile = Profile.objects.create(**validated_data)
+        
+        return profile   
+    
 
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
