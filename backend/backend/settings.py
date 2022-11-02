@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'reviews',
     'subjects',
     'rest_framework',
-    'authen'
+    'authen',
+    'courses'
 ]
 
 MIDDLEWARE = [
