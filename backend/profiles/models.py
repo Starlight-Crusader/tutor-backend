@@ -6,7 +6,6 @@ from subjects.models import Subject
 from certificates.models import Certificate
 from reviews.models import Review
 from phone_field import PhoneField
-from courses.models import Course
 
 
 class Profile(models.Model):
@@ -28,7 +27,6 @@ class Profile(models.Model):
     date_of_birth = models.DateField(null=True)
     location = models.CharField(max_length=50)
     profile_picture = models.FileField(upload_to="docs/pfp", blank=True)
-    courses = models.ManyToManyField(Course, blank=True)
     certificates = models.ManyToManyField(Certificate, blank=True)
     reviews = models.ManyToManyField(Review, blank=True)
      
