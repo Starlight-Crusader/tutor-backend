@@ -10,7 +10,7 @@ class Course(models.Model):
         (2, "OFFLINE")
     )
     
-    subjects = models.ManyToManyField(Subject, blank=True)
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, null=True)
     price = models.IntegerField()
     lesson_format = models.IntegerField(choices=LESSON_TYPE)
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True)

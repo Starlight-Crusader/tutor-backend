@@ -47,7 +47,9 @@ INSTALLED_APPS = [
     'subjects',
     'rest_framework',
     'authen',
-    'courses'
+    'courses',
+    'catalog',
+    'django_filters'
 ]
 
 MIDDLEWARE = [
@@ -140,3 +142,10 @@ EMAIL_HOST = 'smtp.mailtrap.io'
 EMAIL_HOST_USER = '62c21aedf89405'
 EMAIL_HOST_PASSWORD = '4ef96a2a6fca10'
 EMAIL_PORT = '2525'
+
+
+# SET THE FILTER BACKEND
+
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+}
