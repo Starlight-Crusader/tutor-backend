@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     'authen',
     'courses',
     'catalog',
-    'django_filters'
+    'django_filters',
+    'cabinet'
 ]
 
 MIDDLEWARE = [

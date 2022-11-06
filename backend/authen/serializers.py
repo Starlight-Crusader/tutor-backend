@@ -14,7 +14,7 @@ class RegisterUserSerializer(serializers.Serializer):
 
     def validate(self, attrs):
         if attrs['password'] != attrs['confirm_password']:
-            raise serializers.ValidationError('Parola nu coincide.')
+            raise serializers.ValidationError('The passwords do not coincide.')
         return attrs
 
     def create(self, validated_data):

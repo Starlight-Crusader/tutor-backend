@@ -1,0 +1,7 @@
+from django.urls import path
+from cabinet import views
+
+
+urlpatterns = [
+    path('cabinet', views.cabinet_view)
+]

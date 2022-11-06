@@ -1,6 +1,6 @@
 from django.db import models
 from subjects.models import Subject
-from profiles.models import Profile
+from users.models import User
 
 
 class Course(models.Model):
@@ -13,4 +13,4 @@ class Course(models.Model):
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE, null=True)
     price = models.IntegerField()
     lesson_format = models.IntegerField(choices=LESSON_TYPE)
-    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
