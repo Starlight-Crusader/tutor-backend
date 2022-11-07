@@ -10,4 +10,4 @@ class CourseList(generics.ListAPIView):
     serializer_class = CourseSerializer
 
     filterset_fields = ['subject', 'lesson_format']
-        
+    

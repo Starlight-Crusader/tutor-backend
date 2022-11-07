@@ -8,8 +8,10 @@ from subjects.models import Subject
 
 
 class CourseSerializer(serializers.Serializer):
-    model = Course
-    fields = '__all__'
+
+    class Meta:
+        model = Course
+        fields = '__all__'
 
 
 class CourseCreationSerializer(serializers.Serializer):
