@@ -50,7 +50,8 @@ INSTALLED_APPS = [
     'courses',
     'catalog',
     'django_filters',
-    'cabinet'
+    'cabinet',
+    'rest_framework.authtoken'
 ]
 
 MIDDLEWARE = [
@@ -148,5 +149,9 @@ EMAIL_PORT = '2525'
 # SET THE FILTER BACKEND
 
 REST_FRAMEWORK = {
-    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ]
 }

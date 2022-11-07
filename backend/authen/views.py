@@ -1,4 +1,3 @@
-from datetime import datetime
 from django.contrib.auth import hashers
 from rest_framework import generics, decorators, status, response
 from authen import serializers
@@ -7,8 +6,9 @@ from django.core.mail import send_mail
 from backend import settings
 import hashlib
 import random
-import datetime as time
+import datetime 
 from profiles import models as profile_models
+from rest_framework.authtoken.models import Token
 
 
 @decorators.api_view(['POST'])
@@ -24,12 +24,17 @@ def login_view(request):
     except models.User.DoesNotExist:
         return response.Response('User does not exist.',
                                  status=status.HTTP_404_NOT_FOUND)
+    try:
+        token = Token.objects.get(user=user)
+    except Token.DoesNotExist:
+        token = Token.objects.create(user=user)
 
     user.last_login = datetime.datetime.now()
     data = {
         "id": user.id,
         "email": user.email,
         "is_admin": user.is_admin,
+        "auth_token": token.key
     }
 
     return response.Response(data)
@@ -153,3 +158,6 @@ def deactivate_expired(request):
     records = models.RecoveryCode.objects.filter(active_time__range=[datetime.now()-time.timedelta(days=360), datetime.now()]).update(is_active=False)
 
     return response.Response('Expired codes were deactivated!')
+
+
+#TODO: Add authentication and permissions-class for every view
