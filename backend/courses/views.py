@@ -3,11 +3,6 @@ from courses import models, serializers
 from rest_framework import generics, decorators, status, response
 
 
-class CourseList(generics.ListCreateAPIView):
-    queryset = models.Course.objects.all()
-    serializer_class = serializers.CourseSerializer
-
-
 class CreateCourseView(generics.ListCreateAPIView):
     queryset = models.Course.objects.all()
     serializer_class = serializers.CourseCreationSerializer
@@ -24,3 +19,8 @@ def remove_course(request, pk=None):
     course.delete()
 
     return response.Response('The course has been deleted.')
+
+
+class DetailedCourseView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = models.Course.objects.all()
+    serializer_class = serializers.CourseCreationSerializer

@@ -10,7 +10,7 @@ class Course(models.Model):
         (2, "OFFLINE")
     )
     
-    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, null=True)
-    price = models.IntegerField(choices=LESSON_TYPE)
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
+    price = models.PositiveIntegerField()
     lesson_format = models.IntegerField(choices=LESSON_TYPE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)

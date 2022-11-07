@@ -7,14 +7,7 @@ from subjects import serializers as subjects_serializers
 from subjects.models import Subject
 
 
-class CourseSerializer(serializers.Serializer):
-
-    class Meta:
-        model = Course
-        fields = '__all__'
-
-
-class CourseCreationSerializer(serializers.Serializer):
+class CourseCreationSerializer(serializers.ModelSerializer):
     subject = subjects_serializers.SubjectSerializer(read_only=True)
     user = users_serializers.UserSerializer(read_only=True)
     
@@ -22,7 +15,9 @@ class CourseCreationSerializer(serializers.Serializer):
         model = Course
         fields = [
             'price',
-            'lesson_format'
+            'lesson_format',
+            'subject',
+            'user'
         ]
 
     def create(self, validated_data):
@@ -34,4 +29,3 @@ class CourseCreationSerializer(serializers.Serializer):
         course = Course.objects.create(**validated_data)
     
         return course
-

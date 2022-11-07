@@ -26,7 +26,7 @@ class RegisterUserSerializer(serializers.Serializer):
         return user
 
 
-class RegisterStudentSerializer(serializers.Serializer):
+class RegisterStudentSerializer(serializers.ModelSerializer):
     user = users_serializers.UserSerializer(read_only=True)
     
     class Meta:
@@ -49,7 +49,7 @@ class RegisterStudentSerializer(serializers.Serializer):
         return profile
    
     
-class RegisterTutorSerializer(serializers.Serializer):
+class RegisterTutorSerializer(serializers.ModelSerializer):
     user = users_serializers.UserSerializer(read_only=True)
     
     class Meta:
