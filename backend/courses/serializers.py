@@ -2,23 +2,34 @@ from pyexpat import model
 from rest_framework import serializers
 from courses.models import Course
 from users.models import User
+from users import serializers as users_serializers
+from subjects import serializers as subjects_serializers
 from subjects.models import Subject
 
 
 class CourseSerializer(serializers.Serializer):
-    user_id = serializers.IntegerField()
-    lesson_format = serializers.IntegerField()
+    model = Course
+    fields = '__all__'
+
+
+class CourseCreationSerializer(serializers.Serializer):
+    subject = subjects_serializers.SubjectSerializer(read_only=True)
+    user = users_serializers.UserSerializer(read_only=True)
     
-    subject = serializers.CharField()
-    price = serializers.IntegerField()
+    class Meta:
+        model = Course
+        fields = [
+            'price',
+            'lesson_format'
+        ]
 
     def create(self, validated_data):
-        course = Course.objects.create(
-            user_id=User.objects.get(pk=validated_data['user_id']),
-            lesson_format=validated_data['lesson_format'],
-            subject=Subject.objects.get(pk=validated_data['subject']),
-            price=validated_data['price']
-        )
+        validated_data['subject_id'] = self.initial_data['subject_id']
+        validated_data['user_id'] = self.initial_data['user_id']
+        validated_data['price'] = self.initial_data['price']
+        validated_data['lesson_format'] = self.initial_data['lesson_format']
+
+        profile = Profile.objects.create(**validated_data)
+    
         return course
-    #i have no fucking clue how to make the deletion serializer 
-    # and not enough time to debug this one but it seems to not like the user_id field
+

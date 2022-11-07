@@ -7,7 +7,6 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.User
-        # exclude = ['password']
         fields = '__all__'
         extra_kwargs = {"password": {"write_only": True}, "email": {"write_only": True}}
         

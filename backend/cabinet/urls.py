@@ -3,5 +3,5 @@ from cabinet import views
 
 
 urlpatterns = [
-    path('cabinet', views.cabinet_view)
+    path('<int:fk>', views.get_profile)
 ]
