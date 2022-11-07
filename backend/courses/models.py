@@ -11,6 +11,6 @@ class Course(models.Model):
     )
     
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE, null=True)
-    price = models.IntegerField()
+    price = models.IntegerField(choices=LESSON_TYPE)
     lesson_format = models.IntegerField(choices=LESSON_TYPE)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)

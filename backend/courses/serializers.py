@@ -29,7 +29,7 @@ class CourseCreationSerializer(serializers.Serializer):
         validated_data['price'] = self.initial_data['price']
         validated_data['lesson_format'] = self.initial_data['lesson_format']
 
-        profile = Profile.objects.create(**validated_data)
+        course = Course.objects.create(**validated_data)
     
         return course
 
