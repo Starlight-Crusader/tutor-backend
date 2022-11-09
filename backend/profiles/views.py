@@ -7,6 +7,7 @@ from profiles import models, serializers
 class ProfileList(generics.ListCreateAPIView):
     queryset = models.Profile.objects.all()
     serializer_class = serializers.ProfileSerializer
+    
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [authentication.TokenAuthentication]
     
