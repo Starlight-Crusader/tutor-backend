@@ -1,5 +1,6 @@
 from django.contrib.auth import hashers
-from rest_framework import generics, decorators, status, response
+from rest_framework import generics, status, response
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from authen import serializers
 from users import models
 from django.core.mail import send_mail
@@ -9,9 +10,13 @@ import random
 import datetime 
 from profiles import models as profile_models
 from rest_framework.authtoken.models import Token
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny, IsAuthenticated, IsAdminUser
 
 
-@decorators.api_view(['POST'])
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([AllowAny])
 def login_view(request):
     serializer = serializers.LoginSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
@@ -40,7 +45,9 @@ def login_view(request):
     return response.Response(data)
     
 
-@decorators.api_view(['POST'])
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([AllowAny])
 def recovery_step_1(request):
     serializer = serializers.RecoveryStepOneSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
@@ -75,7 +82,9 @@ def recovery_step_1(request):
     return response.Response('A recovery code was ceated and send to your email.')
 
 
-@decorators.api_view(['POST'])
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([AllowAny])
 def recovery_step_2(request):
     serializer = serializers.RecoveryStepTwoSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
@@ -104,15 +113,24 @@ def recovery_step_2(request):
 
 
 class RegisterUserView(generics.CreateAPIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [AllowAny]
+    
     serializer_class = serializers.RegisterUserSerializer
 
 
 class RegisterTutorView(generics.ListCreateAPIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [AllowAny]
+    
     queryset = profile_models.Profile.objects.all()
     serializer_class = serializers.RegisterTutorSerializer
 
 
 class RegisterStudentView(generics.ListCreateAPIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [AllowAny]
+    
     queryset = profile_models.Profile.objects.all()
     serializer_class = serializers.RegisterStudentSerializer
 
@@ -122,7 +140,9 @@ class LogoutView():
     pass
 
 
-@decorators.api_view(['POST'])
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def change_password(request, pk=None):
     serializer = serializers.ChangePasswordSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
@@ -147,7 +167,9 @@ def change_password(request, pk=None):
     return response.Response('The password has been updated.')
 
 
-@decorators.api_view(['PATCH'])
+@api_view(['PATCH'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAdminUser])
 def deactivate_expired(request):
     try:
         records = models.RecoveryCode.objects.all()
