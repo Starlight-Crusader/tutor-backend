@@ -22,7 +22,7 @@ class CourseCreationSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data['subject_id'] = self.initial_data['subject_id']
-        validated_data['user_id'] = self.initial_data['user_id']
+        validated_data['user_id'] = self.context["request"].user.id
         validated_data['price'] = self.initial_data['price']
         validated_data['lesson_format'] = self.initial_data['lesson_format']
 
