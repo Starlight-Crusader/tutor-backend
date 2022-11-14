@@ -11,11 +11,10 @@ import datetime
 from profiles import models as profile_models
 from rest_framework.authtoken.models import Token
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny, IsAuthenticated, IsAdminUser
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 
 
 @api_view(['POST'])
-@authentication_classes([TokenAuthentication])
 @permission_classes([AllowAny])
 def login_view(request):
     serializer = serializers.LoginSerializer(data=request.data)
@@ -46,7 +45,6 @@ def login_view(request):
     
 
 @api_view(['POST'])
-@authentication_classes([TokenAuthentication])
 @permission_classes([AllowAny])
 def recovery_step_1(request):
     serializer = serializers.RecoveryStepOneSerializer(data=request.data)
@@ -83,7 +81,6 @@ def recovery_step_1(request):
 
 
 @api_view(['POST'])
-@authentication_classes([TokenAuthentication])
 @permission_classes([AllowAny])
 def recovery_step_2(request):
     serializer = serializers.RecoveryStepTwoSerializer(data=request.data)
@@ -113,14 +110,12 @@ def recovery_step_2(request):
 
 
 class RegisterUserView(generics.CreateAPIView):
-    authentication_classes = [TokenAuthentication]
     permission_classes = [AllowAny]
     
     serializer_class = serializers.RegisterUserSerializer
 
 
 class RegisterTutorView(generics.ListCreateAPIView):
-    authentication_classes = [TokenAuthentication]
     permission_classes = [AllowAny]
     
     queryset = profile_models.Profile.objects.all()
@@ -128,7 +123,6 @@ class RegisterTutorView(generics.ListCreateAPIView):
 
 
 class RegisterStudentView(generics.ListCreateAPIView):
-    authentication_classes = [TokenAuthentication]
     permission_classes = [AllowAny]
     
     queryset = profile_models.Profile.objects.all()
@@ -180,6 +174,3 @@ def deactivate_expired(request):
     records = models.RecoveryCode.objects.filter(active_time__range=[datetime.now()-time.timedelta(days=360), datetime.now()]).update(is_active=False)
 
     return response.Response('Expired codes were deactivated!')
-
-
-#TODO: Add authentication and permissions-class for every view

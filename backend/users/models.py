@@ -8,9 +8,8 @@ class User(AbstractBaseUser):
     email = models.EmailField(unique=True)
     reg_date = models.DateField(auto_now=True)
     
-    # Migration conflict might happen here - TODO: discuss this with Mihai 
-
     is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'email'
 

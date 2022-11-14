@@ -27,7 +27,7 @@ class RegisterUserSerializer(serializers.Serializer):
 
 
 class RegisterStudentSerializer(serializers.ModelSerializer):
-    user = users_serializers.UserSerializer(read_only=True)
+    user_id = users_serializers.UserSerializer(read_only=True)
     
     class Meta:
         model = Profile
@@ -35,7 +35,8 @@ class RegisterStudentSerializer(serializers.ModelSerializer):
             'profile_type',
             'first_name',
             'last_name',
-            'phone_number'
+            'phone_number',
+            'user_id'
         ]
         
     def create(self, validated_data):
@@ -50,7 +51,7 @@ class RegisterStudentSerializer(serializers.ModelSerializer):
    
     
 class RegisterTutorSerializer(serializers.ModelSerializer):
-    user = users_serializers.UserSerializer(read_only=True)
+    user_id = users_serializers.UserSerializer(read_only=True)
     
     class Meta:
         model = Profile
@@ -60,7 +61,8 @@ class RegisterTutorSerializer(serializers.ModelSerializer):
             'last_name',
             'phone_number',
             'contact_mail',
-            'location'
+            'location',
+            'user_id'
         ]
         
     def create(self, validated_data):

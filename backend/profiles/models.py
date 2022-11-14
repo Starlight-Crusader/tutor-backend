@@ -4,7 +4,6 @@ from django.db import models
 from users.models import User
 from subjects.models import Subject
 from certificates.models import Certificate
-from reviews.models import Review
 from phone_field import PhoneField
 
 
@@ -28,5 +27,3 @@ class Profile(models.Model):
     location = models.CharField(max_length=50)
     profile_picture = models.FileField(upload_to="docs/pfp", blank=True)
     certificates = models.ManyToManyField(Certificate, blank=True)
-    reviews = models.ManyToManyField(Review, blank=True)
-     
