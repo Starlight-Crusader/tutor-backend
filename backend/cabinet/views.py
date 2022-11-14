@@ -16,7 +16,6 @@ def get_profile(request, pk=None):
                                  status=status.HTTP_404_NOT_FOUND)
 
     serializer = serializers.CabinetSerializer(profile)
-    serializer.is_valid(raise_exception=True)
 
     return response.Response(serializer.data)
 
@@ -32,6 +31,5 @@ def own_profile(request):
                                  status=status.HTTP_404_NOT_FOUND)
 
     serializer = serializers.CabinetSerializer(profile)
-    serializer.is_valid(raise_exception=True)
 
     return response.Response(serializer.data)

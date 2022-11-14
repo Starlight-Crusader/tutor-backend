@@ -38,7 +38,7 @@ def login_view(request):
     data = {
         "id": user.id,
         "email": user.email,
-        "is_admin": user.is_admin,
+        "is_staff": user.is_staff,
         "auth_token": token.key
     }
 

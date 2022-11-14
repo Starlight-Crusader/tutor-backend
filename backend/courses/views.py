@@ -8,7 +8,7 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 
 class CreateCourseView(generics.ListCreateAPIView):
     authentication_classes = [TokenAuthentication]
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     
     queryset = models.Course.objects.all()
     serializer_class = serializers.CourseCreationSerializer
@@ -21,12 +21,14 @@ def remove_course(request, pk=None):
     try:
         course = models.Course.objects.get(id=pk)
     except models.Course.DoesNotExist:
-        return response.Response('Cource does not exist.',
+        return response.Response('Course does not exist.',
                                  status=status.HTTP_404_NOT_FOUND)
 
-    course.delete()
-
-    return response.Response('The course has been deleted.')
+    if(course.user_id == request.user.id):
+        course.delete()
+        return response.Response('The course has been deleted.')
+    else:
+        return response.Response('You are not allowed to do that!')
 
 
 class DetailedCourseView(generics.RetrieveUpdateDestroyAPIView):
