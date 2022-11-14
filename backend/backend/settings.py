@@ -160,7 +160,3 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.AllowAny'
     ]
 }
-
-
-import django_heroku
-django_heroku.settings(locals(), staticfiles=False)
