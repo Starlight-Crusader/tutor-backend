@@ -14,6 +14,8 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 
 
+# AUTHENTICATION
+
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def login_view(request):
@@ -42,7 +44,9 @@ def login_view(request):
     }
 
     return response.Response(data)
-    
+
+
+# PASSWORD RECOVERY
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -109,40 +113,15 @@ def recovery_step_2(request):
     return response.Response('The password has been updated.')
 
 
-class RegisterUserView(generics.CreateAPIView):
-    permission_classes = [AllowAny]
-    
-    serializer_class = serializers.RegisterUserSerializer
-
-
-class RegisterTutorView(generics.ListCreateAPIView):
-    permission_classes = [AllowAny]
-    
-    queryset = profile_models.Profile.objects.all()
-    serializer_class = serializers.RegisterTutorSerializer
-
-
-class RegisterStudentView(generics.ListCreateAPIView):
-    permission_classes = [AllowAny]
-    
-    queryset = profile_models.Profile.objects.all()
-    serializer_class = serializers.RegisterStudentSerializer
-
-
-class LogoutView():
-    #TODO: delete token after sign-out
-    pass
-
-
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
-def change_password(request, pk=None):
+def change_password(request):
     serializer = serializers.ChangePasswordSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
 
     try:
-        user = models.User.objects.get(id=pk)
+        user = models.User.objects.get(user = request.user.id)
     except models.User.DoesNotExist:
         return response.Response('User does not exist.',
                                  status=status.HTTP_404_NOT_FOUND)
@@ -160,6 +139,28 @@ def change_password(request, pk=None):
 
     return response.Response('The password has been updated.')
 
+
+# REGISTRATION
+
+class RegisterUserView(generics.CreateAPIView):
+    permission_classes = [AllowAny]
+
+    serializer_class = serializers.RegisterUserSerializer
+
+
+class RegisterTutorView(generics.CreateAPIView):
+    permission_classes = [AllowAny]
+    
+    serializer_class = serializers.RegisterTutorSerializer
+
+
+class RegisterStudentView(generics.CreateAPIView):
+    permission_classes = [AllowAny]
+    
+    serializer_class = serializers.RegisterStudentSerializer
+
+
+# AUTH TOKENS HANDLING
 
 @api_view(['PATCH'])
 @authentication_classes([TokenAuthentication])

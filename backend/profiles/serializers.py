@@ -10,5 +10,3 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Profile
         fields = '__all__'
-
-    #TODO: def to_representation(self, instance):

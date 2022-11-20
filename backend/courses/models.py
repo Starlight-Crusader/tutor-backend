@@ -1,16 +1,19 @@
 from django.db import models
 from subjects.models import Subject
-from users.models import User
+from profiles.models import Profile
 
 
 class Course(models.Model):
-    
+    ONLINE = 1
+    OFFLINE = 2
     LESSON_TYPE = (
-        (1, "ONLINE"),
-        (2, "OFFLINE")
+        (ONLINE, "Online"),
+        (OFFLINE, "Offline")
     )
     
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
+
     price = models.PositiveIntegerField()
     lesson_format = models.IntegerField(choices=LESSON_TYPE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE)

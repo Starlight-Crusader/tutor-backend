@@ -3,6 +3,6 @@ from users import views
 
 
 urlpatterns = [
-    path('', views.UserList.as_view()),
-    path('recovery-codes', views.CodesList.as_view()),
+    path('users-list', views.UserList.as_view()),
+    path('recovery-codes-list', views.CodesList.as_view())
 ]

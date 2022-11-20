@@ -1,12 +1,12 @@
 from rest_framework import generics
-from rest_framework import permissions
-from rest_framework import authentication
 from profiles import models, serializers
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAdminUser
 
 
 class ProfileList(generics.ListCreateAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [IsAdminUser]
+    authentication_classes = [TokenAuthentication]
     
     queryset = models.Profile.objects.all()
     serializer_class = serializers.ProfileSerializer

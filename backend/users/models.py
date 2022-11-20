@@ -15,9 +15,12 @@ class User(AbstractBaseUser):
 
 
 class RecoveryCode(models.Model):
-    recovery_code = models.CharField(max_length=5)
+    recovery_code = models.CharField(max_length=5, unique=True)
+
     created_time = models.DateTimeField(auto_now=True)
     active_time = models.DateTimeField(null=True)
+
     is_active = models.BooleanField(default=True)
+    
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     

@@ -6,6 +6,8 @@ from phonenumber_field.phonenumber import PhoneNumber
 from users import serializers as users_serializers
 
 
+# REGISTRATION
+
 class RegisterUserSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     email = serializers.EmailField()
@@ -23,6 +25,7 @@ class RegisterUserSerializer(serializers.Serializer):
             email=validated_data['email'],
             password=password
         )
+
         return user
 
 
@@ -77,6 +80,8 @@ class RegisterTutorSerializer(serializers.ModelSerializer):
         
         return profile
 
+
+# AUTHENTICATION CREDENTIALS HANDLING
 
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
