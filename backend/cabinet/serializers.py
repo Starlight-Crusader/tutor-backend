@@ -6,12 +6,11 @@ from reviews.models import Review
 from ratings.models import Rating
 from django.db.models import Avg
 from subjects.serializers import SubjectSerializer
-from users.serializers import UserSerializer
 from profiles.serializers import ProfileSerializer
 
 
 class ProfileDataSerializer(serializers.ModelSerializer):
-    
+
     class Meta:
         model = Profile
         exclude = ['id', 'user']
