@@ -1,7 +1,9 @@
 from django.db import models
+from profiles.models import Profile
+
 
 class Certificate(models.Model):
-    subject_name = models.CharField(max_length=32)
-    document_path = models.FileField()
-
+    document_path = models.FileField(upload_to="docs/certificates")
     is_verified = models.BooleanField(default=False)
+
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE)

@@ -1,7 +1,10 @@
 from django.db import models
-from users.models import User
+from profiles.models import Profile
+
 
 class Rating(models.Model):
-    author_user = models.ForeignKey(User, on_delete=models.CASCADE)
+    rating_by = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='rating_authors')
+    rating_for = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='rating_recipients')
 
-    rating_value = models.PositiveIntegerField()
+    rating_value = models.PositiveSmallIntegerField()
+    rating_time = models.DateTimeField(auto_now=True)
