@@ -8,23 +8,21 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django_filters import FilterSet, RangeFilter
 
 
-class PriceFilter(FilterSet):
-    price = RangeFilter()
-
-    class Meta:
-        model = models.Course
-        fields = ['price']
-
-
 class DisplayCourses(generics.ListAPIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticatedOrReadOnly]
-    
+
     queryset = models.Course.objects.all()
     serializer_class = serializers.CourseSerializer
 
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_class = (PriceFilter)
 
     filterset_fields = ['subject', 'lesson_format']
-    
+
+    def get_queryset(self):
+        min_value = self.request.query_params.get('min')
+        max_value = self.request.query_params.get('max')
+
+        filtered_courses = models.Course.objects.filter(price__range=(min_value, max_value))
+        return filtered_courses
+        
