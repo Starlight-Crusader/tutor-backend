@@ -19,7 +19,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def login_view(request):
-    serializer = serializers.LoginSerializer(data=request.data['payload'])
+    serializer = serializers.LoginSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
 
     try:
