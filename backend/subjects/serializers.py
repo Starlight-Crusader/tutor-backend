@@ -8,4 +8,3 @@ class SubjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Subject
         fields = '__all__'
-      
