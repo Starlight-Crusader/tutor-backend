@@ -22,9 +22,17 @@ class ProfileDataSerializer(serializers.ModelSerializer):
         data["rating_value"] = avg_rating["rating_value__avg"]
 
         reviews = instance.review_recipients.all().values()
+
+        for i in reviews:
+            i["author_name"] = str(Profile.objects.get(user_id=i["review_by_id"]).first_name) + ' ' + str(Profile.objects.get(user_id=i["review_by_id"]).last_name)
+
         data["reviews"] = reviews
 
         courses = instance.course_set.all().values()
+
+        for i in courses:
+            i["subject_name"] = Subject.objects.get(id=i["subject_id"]).subject_name
+
         data["courses"] = courses
 
         return data
