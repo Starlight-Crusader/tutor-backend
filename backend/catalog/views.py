@@ -17,12 +17,13 @@ class DisplayCourses(generics.ListAPIView):
 
     filter_backends = (filters.DjangoFilterBackend,)
 
-    filterset_fields = ['subject', 'lesson_format']
+    filterset_fields = ['subject', 'lesson_format', 'location']
 
     def get_queryset(self):
         min_value = self.request.query_params.get('min')
         max_value = self.request.query_params.get('max')
 
         filtered_courses = models.Course.objects.filter(price__range=(min_value, max_value))
+
         return filtered_courses
         

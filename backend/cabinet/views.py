@@ -79,3 +79,21 @@ class NewRatingView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
 
     serializer_class = serializers.NewRatingSerializer
+
+@api_view(['PUT'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def modify_about_me(request):
+    serializer = serializers.UpdateAboutMeSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+
+    try:
+        profile = models.Profile.objects.get(user_id=request.user.id)
+    except Profile.DoesNotExist:
+        return response.Response('Profile was not found.',
+                                 status=status.HTTP_404_NOT_FOUND)
+
+    profile.about_me = serializer.data['about_me']
+    profile.save()
+
+    return response.Response('The about me has been updated.')
