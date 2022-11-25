@@ -48,7 +48,8 @@ class NewCourseSerializer(serializers.ModelSerializer):
             'price',
             'lesson_format',
             'subject',
-            'profile'
+            'profile',
+            'location'
         ]
 
     def create(self, validated_data):
@@ -56,6 +57,9 @@ class NewCourseSerializer(serializers.ModelSerializer):
         validated_data['profile_id'] = self.context["request"].user.profile_set.get(user=self.context["request"].user.id).id
         validated_data['price'] = self.initial_data['price']
         validated_data['lesson_format'] = self.initial_data['lesson_format']
+        
+        if(self.initial_data['lesson_format'] == 2):
+           validated_data['location'] = Profile.objects.get(id=validated_data['profile_id']).location 
 
         course = Course.objects.create(**validated_data)
     
@@ -104,3 +108,12 @@ class NewRatingSerializer(serializers.ModelSerializer):
         rating = Rating.objects.create(**validated_data)
     
         return rating
+
+
+class UpdateAboutMeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Profile
+        fields = [
+            'about_me'
+        ]

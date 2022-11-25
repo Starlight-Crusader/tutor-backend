@@ -15,5 +15,6 @@ class Course(models.Model):
 
     price = models.PositiveIntegerField()
     lesson_format = models.IntegerField(choices=LESSON_TYPE)
+    location = models.CharField(max_length=50)
     
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
