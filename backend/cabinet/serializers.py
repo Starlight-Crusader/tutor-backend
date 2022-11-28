@@ -24,7 +24,7 @@ class ProfileDataSerializer(serializers.ModelSerializer):
         reviews = instance.review_recipients.all().values()
 
         for i in reviews:
-            i["author_name"] = str(Profile.objects.get(user_id=i["review_by_id"]).first_name) + ' ' + str(Profile.objects.get(user_id=i["review_by_id"]).last_name)
+            i["author_name"] = str(Profile.objects.get(id=i["review_by_id"]).first_name) + ' ' + str(Profile.objects.get(id=i["review_by_id"]).last_name)
 
         data["reviews"] = reviews
 
