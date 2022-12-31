@@ -7,9 +7,11 @@ from ratings.models import Rating
 from django.db.models import Avg
 from subjects.serializers import SubjectSerializer
 from profiles.serializers import ProfileSerializer
+from subscriptions.serializers import SubscriptionSerializer
 
 
 class ProfileDataSerializer(serializers.ModelSerializer):
+    subscription = SubscriptionSerializer(read_only=True)
 
     class Meta:
         model = Profile
@@ -34,6 +36,8 @@ class ProfileDataSerializer(serializers.ModelSerializer):
             i["subject_name"] = Subject.objects.get(id=i["subject_id"]).subject_name
 
         data["courses"] = courses
+
+        data["subscriptions"] = Subscription.objects.get(student=models.Profile.objects.get(user_id=request.user.id).id)
 
         return data
 

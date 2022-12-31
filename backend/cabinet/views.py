@@ -97,3 +97,17 @@ def modify_about_me(request):
     profile.save()
 
     return response.Response('The about me has been updated.')
+
+
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def create_subsription(request):
+    if Subscription.objects.get(student=models.Profile.objects.get(user_id=request.user.id).id, course=request.query_params.get('course')).exists():
+        return response.Response('The user is already subscribed!',
+                                status=status.HTTP_403_FORBIDDEN)
+    else:
+        Subscription.objects.create(student=models.Profile.objects.get(user_id=request.user.id).id, course=request.query_params.get('course'))
+
+        return response.Response('Success!',
+                                status=status.HTTP_200_OK)
