@@ -9,5 +9,6 @@ urlpatterns = [
     path('me/delete-course/<int:pk>', views.remove_course),
     path('me/update-about-me', views.modify_about_me),
     path('<int:pk>/new-review', views.NewReviewView.as_view()),
-    path('<int:pk>/new-rating', views.NewRatingView.as_view())
+    path('<int:pk>/new-rating', views.NewRatingView.as_view()),
+    path('me/delete-subscr', views.delete_subsription)
 ]

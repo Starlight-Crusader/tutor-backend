@@ -35,7 +35,7 @@ def own_profile(request):
         return response.Response('Profile does not exist.',
                                  status=status.HTTP_404_NOT_FOUND)
 
-    serializer = serializers.ProfileDataSerializer(profile)
+    serializer = serializers.ProfileDataSerializer(profile, context={'request': request})
 
     return response.Response(serializer.data)
 
@@ -99,15 +99,17 @@ def modify_about_me(request):
     return response.Response('The about me has been updated.')
 
 
-@api_view(['POST'])
+@api_view(['DELETE'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
-def create_subsription(request):
-    if Subscription.objects.get(student=models.Profile.objects.get(user_id=request.user.id).id, course=request.query_params.get('course')).exists():
-        return response.Response('The user is already subscribed!',
-                                status=status.HTTP_403_FORBIDDEN)
-    else:
-        Subscription.objects.create(student=models.Profile.objects.get(user_id=request.user.id).id, course=request.query_params.get('course'))
+def delete_subsription(request):
+    try:
+        record = Subscription.objects.get(student=models.Profile.objects.get(user_id=request.user.id).id, course=request.query_params.get('course'))
+    except models.Subscription.DoesNotExist:
+        return response.Response('Error!',
+                                status=status.HTTP_400_BAD_REQUEST)
 
-        return response.Response('Success!',
-                                status=status.HTTP_200_OK)
+    record.delete()
+
+    return response.Response('Success!',
+                            status=status.HTTP_200_OK)

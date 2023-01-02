@@ -52,7 +52,8 @@ INSTALLED_APPS = [
     'django_filters',
     'cabinet',
     'rest_framework.authtoken',
-    'corsheaders'
+    'corsheaders',
+    'subscriptions'
 ]
 
 MIDDLEWARE = [

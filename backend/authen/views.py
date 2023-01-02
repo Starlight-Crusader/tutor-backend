@@ -25,8 +25,12 @@ def login_view(request):
     try:
         user = models.User.objects.get(email=serializer.data['email'])
         if user.check_password(serializer.data['password']) is False:
-            return response.Response('Password is incorrect.',
-                                     status=status.HTTP_400_BAD_REQUEST)
+            error = {
+                "status": 400,
+                "message": "The auth. data is incorrect."
+            }
+
+            return response.Response(error)
     except models.User.DoesNotExist:
         return response.Response('User does not exist.',
                                  status=status.HTTP_404_NOT_FOUND)

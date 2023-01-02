@@ -1,10 +1,11 @@
-from rest_framework import generics, filters
+from rest_framework import generics, filters, response, status
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from django.shortcuts import render
 from courses import models
 from courses import serializers
 from django_filters import rest_framework as filters
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from django_filters import FilterSet, RangeFilter
 from subscriptions.models import Subscription
 from users.models import User
@@ -34,27 +35,17 @@ class DisplayCourses(generics.ListAPIView):
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def create_subsription(request):
-    if Subscription.objects.get(student=models.Profile.objects.get(user_id=request.user.id).id, course=request.query_params.get('course')).exists():
-        return response.Response('The user is already subscribed!',
-                                status=status.HTTP_403_FORBIDDEN)
-    else:
-        Subscription.objects.create(student=models.Profile.objects.get(user_id=request.user.id).id, course=request.query_params.get('course'))
+    if models.Profile.objects.get(user_id=request.user.id).profile_type != 2:
+        return response.Response('You are not allowed to perform this action!',
+                                status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        record = Subscription.objects.get(student=models.Profile.objects.get(user_id=request.user.id), course_id=request.query_params.get('course'))
+    except Subscription.DoesNotExist:
+        Subscription.objects.create(student=models.Profile.objects.get(user_id=request.user.id), course_id=request.query_params.get('course'))
 
         return response.Response('Success!',
                                 status=status.HTTP_200_OK)
 
-
-@api_view(['DELETE'])
-@authentication_classes([TokenAuthentication])
-@permission_classes([IsAuthenticated])
-def delete_subsription(request):
-    try:
-        record = Subscription.objects.get(student=models.Profile.objects.get(user_id=request.user.id).id, course=request.query_params.get('course'))
-    except models.Subscription.DoesNotExist:
-        return response.Response('Error!',
-                                status=status.HTTP_400_BAD_REQUEST)
-
-    record.delete()
-
-    return response.Response('Success!',
-                            status=status.HTTP_200_OK)
+    return response.Response('Something went wrong!',
+                                status=status.HTTP_403_FORBIDDEN)

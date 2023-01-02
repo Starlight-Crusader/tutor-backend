@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.fields import CurrentUserDefault
 from profiles.models import Profile
 from courses.models import Course
 from subjects.models import Subject
@@ -8,10 +9,10 @@ from django.db.models import Avg
 from subjects.serializers import SubjectSerializer
 from profiles.serializers import ProfileSerializer
 from subscriptions.serializers import SubscriptionSerializer
+from subscriptions.models import Subscription
 
 
 class ProfileDataSerializer(serializers.ModelSerializer):
-    subscription = SubscriptionSerializer(read_only=True)
 
     class Meta:
         model = Profile
@@ -37,7 +38,11 @@ class ProfileDataSerializer(serializers.ModelSerializer):
 
         data["courses"] = courses
 
-        data["subscriptions"] = Subscription.objects.get(student=models.Profile.objects.get(user_id=request.user.id).id)
+        subscriptions = instance.subscription_set.all()
+
+        serializer = SubscriptionSerializer(subscriptions, many=True)
+
+        data['subscriptions'] = serializer.data
 
         return data
 
