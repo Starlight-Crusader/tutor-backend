@@ -17,8 +17,10 @@ def get_profile(request, pk=None):
     try:
         profile = models.Profile.objects.get(user=pk)
     except models.Profile.DoesNotExist:
-        return response.Response('Profile does not exist.',
-                                 status=status.HTTP_404_NOT_FOUND)
+        return response.Response(
+            'Profile was not found.',
+            status=status.HTTP_404_NOT_FOUND
+        )
 
     serializer = serializers.ProfileDataSerializer(profile)
 
@@ -32,8 +34,10 @@ def own_profile(request):
     try:
         profile = models.Profile.objects.get(user=request.user.id)
     except models.Profile.DoesNotExist:
-        return response.Response('Profile does not exist.',
-                                 status=status.HTTP_404_NOT_FOUND)
+        return response.Response(
+            'Profile was not found.',
+            status=status.HTTP_404_NOT_FOUND
+        )
 
     serializer = serializers.ProfileDataSerializer(profile, context={'request': request})
 
@@ -57,14 +61,22 @@ def remove_course(request, pk=None):
     try:
         course = Course.objects.get(id=pk)
     except Course.DoesNotExist:
-        return response.Response('Course does not exist.',
-                                 status=status.HTTP_404_NOT_FOUND)
+        return response.Response(
+            'Profile was not found.',
+            status=status.HTTP_404_NOT_FOUND
+        )
 
     if(course.user_id == request.user.id):
         course.delete()
-        return response.Response('The course has been deleted.')
+        return response.Response(
+            'The course has been deleted.',
+            status=status.HTTP_200_OK
+        )
     else:
-        return response.Response('You are not allowed to do that!')
+        return response.Response(
+            'You are not allowed to do that!',
+            status=status.HTTP_403_FORBIDDEN
+        )
 
 
 class NewReviewView(generics.CreateAPIView):
@@ -80,6 +92,7 @@ class NewRatingView(generics.CreateAPIView):
 
     serializer_class = serializers.NewRatingSerializer
 
+
 @api_view(['PUT'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
@@ -90,13 +103,18 @@ def modify_about_me(request):
     try:
         profile = models.Profile.objects.get(user_id=request.user.id)
     except Profile.DoesNotExist:
-        return response.Response('Profile was not found.',
-                                 status=status.HTTP_404_NOT_FOUND)
+        return response.Response(
+            'Profile was not found.',
+            status=status.HTTP_404_NOT_FOUND
+        )
 
     profile.about_me = serializer.data['about_me']
     profile.save()
 
-    return response.Response('The about me has been updated.')
+    return response.Response(
+        'The about me has been updated.',
+        status=status.HTTP_200_OK
+    )
 
 
 @api_view(['DELETE'])
@@ -106,10 +124,14 @@ def delete_subsription(request):
     try:
         record = Subscription.objects.get(student=models.Profile.objects.get(user_id=request.user.id).id, course=request.query_params.get('course'))
     except models.Subscription.DoesNotExist:
-        return response.Response('Error!',
-                                status=status.HTTP_400_BAD_REQUEST)
+        return response.Response(
+            'Record was not found.',
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
     record.delete()
 
-    return response.Response('Success!',
-                            status=status.HTTP_200_OK)
+    return response.Response(
+        'The record was successfully deleted.',
+        status=status.HTTP_200_OK
+    )
