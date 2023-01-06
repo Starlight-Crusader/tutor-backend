@@ -38,7 +38,7 @@ def create_subsription(request):
     if models.Profile.objects.get(user_id=request.user.id).profile_type != 2:
         return response.Response(
             'You are not allowed to perform this action!',
-            status=status.HTTP_400_BAD_REQUEST
+            status=status.HTTP_403_BAD_REQUEST
         )
 
     try:
