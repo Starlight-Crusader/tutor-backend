@@ -36,6 +36,9 @@ class ProfileDataSerializer(serializers.ModelSerializer):
         for i in courses:
             i["subject_name"] = Subject.objects.get(id=i["subject_id"]).subject_name
 
+        for i in courses:
+            i["num_of_subscriptions"] = Subscription.objects.filter(course_id=i["id"]).count()
+
         data["courses"] = courses
 
         subscriptions = instance.subscription_set.all()
