@@ -17,10 +17,12 @@ def get_profile(request, pk=None):
     try:
         profile = models.Profile.objects.get(user=pk)
     except models.Profile.DoesNotExist:
-        return response.Response(
-            'Profile was not found.',
-            status=status.HTTP_404_NOT_FOUND
-        )
+        error = {
+            "message": "Profile was not found.",
+            "status": 404
+        }
+
+        return response.Response(error)
 
     serializer = serializers.ProfileDataSerializer(profile)
 
@@ -34,10 +36,12 @@ def own_profile(request):
     try:
         profile = models.Profile.objects.get(user=request.user.id)
     except models.Profile.DoesNotExist:
-        return response.Response(
-            'Profile was not found.',
-            status=status.HTTP_404_NOT_FOUND
-        )
+        error = {
+            "message": "Profile was not found.",
+            "status": 404
+        }
+
+        return response.Response(error)
 
     serializer = serializers.ProfileDataSerializer(profile, context={'request': request})
 
@@ -61,22 +65,29 @@ def remove_course(request, pk=None):
     try:
         course = Course.objects.get(id=pk)
     except Course.DoesNotExist:
-        return response.Response(
-            'Profile was not found.',
-            status=status.HTTP_404_NOT_FOUND
-        )
+        error = {
+            "message": "Profile was not found.",
+            "status": 404
+        }
+
+        return response.Response(error)
 
     if(course.user_id == request.user.id):
         course.delete()
-        return response.Response(
-            'The course has been deleted.',
-            status=status.HTTP_200_OK
-        )
+
+        message = {
+            "message": "The course has been deleted.",
+            "status": 200
+        }
+
+        return response.Response(message)
     else:
-        return response.Response(
-            'You are not allowed to do that!',
-            status=status.HTTP_403_FORBIDDEN
-        )
+        error = {
+            "message": "You are not allowed to do that.",
+            "status": 403
+        }
+
+        return response.Response(error)
 
 
 class NewReviewView(generics.CreateAPIView):
@@ -103,18 +114,22 @@ def modify_about_me(request):
     try:
         profile = models.Profile.objects.get(user_id=request.user.id)
     except Profile.DoesNotExist:
-        return response.Response(
-            'Profile was not found.',
-            status=status.HTTP_404_NOT_FOUND
-        )
+        error = {
+            "message": "Profile was not found.",
+            "status": 404
+        }
+
+        return response.Response(error)
 
     profile.about_me = serializer.data['about_me']
     profile.save()
 
-    return response.Response(
-        'The about me has been updated.',
-        status=status.HTTP_200_OK
-    )
+    message = {
+        "message": "The about me has been updated.",
+        "status": 200
+    }
+
+    return response.Response(message)
 
 
 @api_view(['DELETE'])
@@ -124,14 +139,18 @@ def delete_subsription(request):
     try:
         record = Subscription.objects.get(student=models.Profile.objects.get(user_id=request.user.id).id, course=request.query_params.get('course'))
     except models.Subscription.DoesNotExist:
-        return response.Response(
-            'Record was not found.',
-            status=status.HTTP_400_BAD_REQUEST
-        )
+        error = {
+            "message": "Record was not found.",
+            "status": 404
+        }
+
+        return response.Response(error)
 
     record.delete()
 
-    return response.Response(
-        'The record was successfully deleted.',
-        status=status.HTTP_200_OK
-    )
+    message = {
+        "message": "The record was successfully deleted.",
+        "status": 200
+    }
+
+    return response.Response(message)

@@ -36,22 +36,28 @@ class DisplayCourses(generics.ListAPIView):
 @permission_classes([IsAuthenticated])
 def create_subsription(request):
     if models.Profile.objects.get(user_id=request.user.id).profile_type != 2:
-        return response.Response(
-            'You are not allowed to perform this action!',
-            status=status.HTTP_403_BAD_REQUEST
-        )
+        error = {
+            "message": "You are not allowed to perform this action.",
+            "status": 403
+        }
+
+        return response.Response(error)
 
     try:
         record = Subscription.objects.get(student=models.Profile.objects.get(user_id=request.user.id), course_id=request.query_params.get('course'))
     except Subscription.DoesNotExist:
         Subscription.objects.create(student=models.Profile.objects.get(user_id=request.user.id), course_id=request.query_params.get('course'))
 
-        return response.Response(
-            'The subscription was successfully created.',
-            status=status.HTTP_200_OK
-        )
+        message = {
+            "message": "The subscription was successfully created.",
+            "status": 200
+        }
 
-    return response.Response(
-        'Something went wrong!',
-        status=status.HTTP_403_FORBIDDEN
-    )
+        return response.Response(message)
+
+    error = {
+        "message": "Something went wrong.",
+        "status": 400
+    }
+
+    return response.Response(error)

@@ -25,15 +25,19 @@ def login_view(request):
     try:
         user = models.User.objects.get(email=serializer.data['email'])
         if user.check_password(serializer.data['password']) is False:
-            return response.Response(
-                'The auth. data is incorrect.',
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            error = {
+                "message": "The auth. data is incorrect.",
+                "status": 400
+            }
+
+            return response.Response(error)
     except models.User.DoesNotExist:
-        return response.Response(
-            'The auth. data is incorrect.',
-            status=status.HTTP_404_NOT_FOUND
-        )
+        error = {
+            "message": "The auth. data is incorrect.",
+            "status": 400
+        }
+
+        return response.Response(error)
 
     try:
         token = Token.objects.get(user=user)
@@ -62,18 +66,22 @@ def recovery_step_1(request):
     try:
         user = models.User.objects.get(email=serializer.data['email'])
     except models.User.DoesNotExist:
-        return response.Response(
-            'The auth. data is incorrect.',
-            status=status.HTTP_404_NOT_FOUND
-        )
+        error = {
+            "message": "The auth. data is incorrect.",
+            "status": 400
+        }
+
+        return response.Response(error)
 
     recoveryCode = models.RecoveryCode.objects.filter(user_id=user.pk)
 
     if(recoveryCode):
-        return response.Response(
-            'You already have a token.',
-            status=status.HTTP_400_BAD_REQUEST
-        )
+        error = {
+            "message": "You already have a token.",
+            "status": 403
+        }
+
+        return response.Response(error)
 
     seed = str(random.randint(0, 1000))
     hashed = hashlib.md5(seed.encode())
@@ -94,10 +102,12 @@ def recovery_step_1(request):
         fail_silently=False
     )
 
-    return response.Response(
-        'A recovery code was ceated and send to your email.',
-        status=status.HTTP_200_OK
-    )
+    message = {
+        "message": "A recovery code was ceated and sent to your email.",
+        "status": 200
+    }
+
+    return response.Response(message)
 
 
 @api_view(['POST'])
@@ -109,22 +119,28 @@ def recovery_step_2(request):
     try:
         recoveryCode = models.RecoveryCode.objects.get(recovery_code=serializer.data['recovery_code'])
     except models.RecoveryCode.DoesNotExist:
-        return response.Response(
-            'This recovery code does not exist.',
-            status=status.HTTP_404_NOT_FOUND
-        )
+        error = {
+            "message": "This recovery code does not exist.",
+            "status": 400
+        }
+
+        return response.Response(error)
 
     if(recoveryCode.is_active == False):
-        return response.Response(
-            'This recovery code is no longer valid.',
-            status=status.HTTP_400_BAD_REQUEST
-        )
+        error = {
+            "message": "This recovery code is no longer valid.",
+            "status": 400
+        }
+
+        return response.Response(error)
     
     if(serializer.data['new_password'] != serializer.data['confirm_new_password']):
-        return response.Response(
-            'Passwords do not coincide!',
-            status=status.HTTP_400_BAD_REQUEST
-        )
+        error = {
+            "message": "Passwords do not coincide.",
+            "status": 400
+        }
+
+        return response.Response(error)
 
     recoveryCode.user.password = hashers.make_password(serializer.data['new_password'])
     recoveryCode.user.save(update_fields=['password'])
@@ -132,10 +148,12 @@ def recovery_step_2(request):
     recoveryCode.is_active = False 
     recoveryCode.save(update_fields=['is_active'])
 
-    return response.Response(
-        'The password has been updated.',
-        status=status.HTTP_200_OK
-    )
+    message = {
+        "message": "The password has been updated.",
+        "status": 200
+    }
+
+    return response.Response(message)
 
 
 @api_view(['POST'])
@@ -148,29 +166,38 @@ def change_password(request):
     try:
         user = models.User.objects.get(user = request.user.id)
     except models.User.DoesNotExist:
-        return response.Response(
-            'User does not exist.',
-            status=status.HTTP_404_NOT_FOUND)
+        error = {
+            "message": "User does not exist.",
+            "status": 400
+        }
+
+        return response.Response(error)
 
     if user.check_password(serializer.data['old_password']) is False:
-        return response.Response(
-            'Old password is incorrect.',
-            status=status.HTTP_400_BAD_REQUEST
-        )
+        error = {
+            "message": "Old password is incorrect.",
+            "status": 400
+        }
+
+        return response.Response(error)
 
     if serializer.data['new_password'] != serializer.data['confirm_new_password']:
-        return response.Response(
-            'Passwords do not coincide.',
-            status=status.HTTP_400_BAD_REQUEST
-        )
+        error = {
+            "message": "Passwords do not coincide.",
+            "status": 400
+        }
+
+        return response.Response(error)
 
     user.password = hashers.make_password(serializer.data['new_password'])
     user.save(update_fields=['password'])
 
-    return response.Response(
-        'The password has been updated.',
-        status=status.HTTP_200_OK
-    )
+    message = {
+        "message": "The password has been updated.",
+        "status": 200
+    }
+
+    return response.Response(message)
 
 
 # REGISTRATION
@@ -202,14 +229,18 @@ def deactivate_expired(request):
     try:
         records = models.RecoveryCode.objects.all()
     except:
-        return response.Response(
-            'There are no recovery codes.',
-            status=status.HTTP_202_ACCEPTED
-        )
+        message = {
+            "message": "There are no recovery codes.",
+            "status": 202
+        }
+
+        return response.Response(message)
 
     records = models.RecoveryCode.objects.filter(active_time__range=[datetime.now()-time.timedelta(days=360), datetime.now()]).update(is_active=False)
 
-    return response.Response(
-        'Expired codes were deactivated!',
-        status=status.HTTP_200_OK
-    )
+    message = {
+        "message": "Expired codes were deactivated!",
+        "status": 200
+    }
+
+    return response.Response(message)
