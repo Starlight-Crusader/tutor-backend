@@ -66,7 +66,7 @@ def remove_course(request, pk=None):
         course = Course.objects.get(id=pk)
     except Course.DoesNotExist:
         error = {
-            "message": "Profile was not found.",
+            "message": "Record was not found.",
             "status": 404
         }
 
